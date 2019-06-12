@@ -28,7 +28,7 @@ classdef QuantizationLayer < nnet.layer.Layer
             
             % Initialize layer weights
             layer.a = ones(1, codewords);
-            layer.b = linspace(-100, 100, codewords);
+            layer.b = linspace(-1, 1, codewords);
             layer.c = ones(1, codewords);
         end
         

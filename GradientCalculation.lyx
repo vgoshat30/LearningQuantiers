@@ -1,0 +1,428 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass heb-article
+\use_default_options true
+\maintain_unincluded_children false
+\language hebrew
+\language_package default
+\inputencoding cp1255
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+גרדיאנט שכבת הקוונטיזציה
+\end_layout
+
+\begin_layout Standard
+נסתכל על שכבת קוונטיזציה עם 
+\begin_inset Formula $N$
+\end_inset
+
+ קוונטייזרים, 
+\begin_inset Formula $M$
+\end_inset
+
+ מילות קוד כל אחד.
+ נסמן את וקטור הכניסה לשכבה בתור 
+\begin_inset Formula $X$
+\end_inset
+
+, וקטור היציאה בתור 
+\begin_inset Formula $Z$
+\end_inset
+
+ ואת וקטור המוצא של כל הרשת בתור 
+\begin_inset Formula $L$
+\end_inset
+
+.
+ 
+\begin_inset Formula $X$
+\end_inset
+
+ ו-
+\begin_inset Formula $Z$
+\end_inset
+
+ הינם ממימד 
+\begin_inset Formula $N$
+\end_inset
+
+ ואילו 
+\begin_inset Formula $L$
+\end_inset
+
+, במקרה כללי היה ממימד כלשהו 
+\begin_inset Formula $P$
+\end_inset
+
+ אבל מכיוון שבמטלב מוצא הרשת חייב להיות סקלרי )ה-
+\begin_inset Formula $\text{loss}$
+\end_inset
+
+( 
+\begin_inset Formula $L$
+\end_inset
+
+ הינו סקלר.
+\end_layout
+
+\begin_layout Itemize
+מוצא השכבה 
+\series bold
+בשלב האימון 
+\series default
+נתון ע"י:
+\begin_inset Formula 
+\[
+Z=\left(\begin{array}{ccccc}
+Z_{1} & \cdots & Z_{l} & \cdots & Z_{N}\end{array}\right)
+\]
+
+\end_inset
+
+כאשר:
+\begin_inset Formula 
+\[
+Z_{i}=\sum_{j=1}^{M}a_{j}\tanh\left(c_{j}X_{i}-b_{j}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+גרדיאנט מוצא השכבה לפי מבוא השכבה הינו: 
+\begin_inset Formula 
+\[
+\frac{\partial Z}{\partial X}=\left(\begin{array}{ccccc}
+\frac{\partial Z_{1}}{\partial X_{1}} & \cdots & \frac{\partial Z_{1}}{\partial X_{i}} & \cdots & \frac{\partial Z_{1}}{\partial X_{N}}\\
+\vdots & \ddots & \vdots & \ddots & \vdots\\
+\frac{\partial Z_{i}}{\partial X_{1}} & \cdots & \frac{\partial Z_{i}}{\partial X_{i}} & \cdots & \frac{\partial Z_{i}}{\partial X_{N}}\\
+\vdots & \ddots & \vdots & \ddots & \vdots\\
+\frac{\partial Z_{N}}{\partial X_{1}} & \cdots & \frac{\partial Z_{N}}{\partial X_{i}} & \cdots & \frac{\partial Z_{N}}{\partial X_{N}}
+\end{array}\right)=\left(\begin{array}{ccccc}
+\frac{\partial Z_{1}}{\partial X_{1}} & \cdots & 0 & \cdots & 0\\
+\vdots & \ddots & \vdots & \ddots & \vdots\\
+0 & \cdots & \frac{\partial Z_{i}}{\partial X_{i}} & \cdots & 0\\
+\vdots & \ddots & \vdots & \ddots & \vdots\\
+0 & \cdots & 0 & \cdots & \frac{\partial Z_{N}}{\partial X_{N}}
+\end{array}\right)
+\]
+
+\end_inset
+
+שכן הקוונטייזרים נפרדים והנגזרת של מוצא מסויים לפי מבוא אחר מתאפסת: 
+\begin_inset Formula 
+\[
+\frac{\partial Z_{l}}{\partial X_{i}}=0\quad,\quad\forall l\neq i
+\]
+
+\end_inset
+
+עבור נגזרות שאינן מתאפסות: 
+\begin_inset Formula 
+\[
+\frac{\partial Z_{i}}{\partial X_{i}}=\frac{\partial}{\partial X_{i}}\sum_{j=1}^{M}a_{j}\tanh\left(c_{j}X_{i}-b_{j}\right)=\sum_{j=1}^{M}a_{j}\frac{\partial}{\partial X_{i}}\tanh\left(c_{j}X_{i}-b_{j}\right)=\sum_{j=1}^{M}a_{j}c_{j}\left[1-\tanh^{2}\left(c_{j}X_{i}-b_{j}\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+נגזרות של 
+\begin_inset Formula $Z$
+\end_inset
+
+ לפי פרמטרי השכבה:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+נגזרת לפי 
+\begin_inset Formula $b=\left(\begin{array}{ccccc}
+b_{1} & \cdots & b_{i} & \cdots & b_{M}\end{array}\right)$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\frac{\partial Z}{\partial b}=\left(\begin{array}{ccccc}
+\frac{\partial Z_{1}}{\partial b_{1}} & \cdots & \frac{\partial Z_{1}}{\partial b_{i}} & \cdots & \frac{\partial Z_{1}}{\partial b_{M}}\\
+\vdots & \ddots & \vdots & \ddots & \vdots\\
+\frac{\partial Z_{l}}{\partial b_{1}} & \cdots & \frac{\partial Z_{l}}{\partial b_{i}} & \cdots & \frac{\partial Z_{l}}{\partial b_{M}}\\
+\vdots & \ddots & \vdots & \ddots & \vdots\\
+\frac{\partial Z_{N}}{\partial b_{1}} & \cdots & \frac{\partial Z_{N}}{\partial b_{i}} & \cdots & \frac{\partial Z_{N}}{\partial b_{M}}
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\frac{\partial Z_{l}}{\partial b_{i}}=\frac{\partial}{\partial b_{i}}\sum_{j=1}^{M}a_{j}\tanh\left(c_{j}X_{l}-b_{j}\right)=a_{i}\left[\tanh^{2}\left(c_{i}X_{l}-b_{i}\right)-1\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+נחלק את גרדיאנט מוצא הרשת 
+\begin_inset Formula $L$
+\end_inset
+
+ לפי הכניסות לשכבת הקוונטיזציה למקרה בו מוצא הרשת הינו ממימד 
+\begin_inset Formula $P$
+\end_inset
+
+ ולמקרה בו הינו סקלר:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\series bold
+\bar under
+וקטור
+\bar default
+:
+\series default
+ עבור מוצא רשת וקטורי נקבל:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+גרדיאנט מוצא השכבה, 
+\begin_inset Formula $L$
+\end_inset
+
+, לפי הכניסות לשכבה עבור מוצא ממימד 
+\begin_inset Formula $P$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{\partial L}{\partial X}=\left(\begin{array}{ccccc}
+\frac{\partial L_{1}}{\partial X_{1}} & \cdots & \frac{\partial L_{1}}{\partial X_{i}} & \cdots & \frac{\partial L_{1}}{\partial X_{N}}\\
+\vdots & \ddots & \vdots & \ddots & \vdots\\
+\frac{\partial L_{k}}{\partial X_{1}} & \cdots & \frac{\partial L_{k}}{\partial X_{i}} & \cdots & \frac{\partial L_{k}}{\partial X_{N}}\\
+\vdots & \ddots & \vdots & \ddots & \vdots\\
+\frac{\partial L_{P}}{\partial X_{1}} & \cdots & \frac{\partial L_{P}}{\partial X_{i}} & \cdots & \frac{\partial L_{P}}{\partial X_{N}}
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+כאשר איבר כללי ביעקוביאן הינו:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{\partial L_{k}}{\partial X_{i}}=\sum_{l=1}^{N}\frac{\partial L_{k}}{\partial Z_{l}}\frac{\partial Z_{l}}{\partial X_{i}}=\frac{\partial L_{k}}{\partial Z_{i}}\frac{\partial Z_{i}}{\partial X_{i}}=\frac{\partial L_{k}}{\partial Z_{i}}\sum_{j=1}^{M}a_{j}c_{j}\left[1-\tanh^{2}\left(c_{j}X_{i}-b_{j}\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+גרדיאנט מוצא השכבה, 
+\begin_inset Formula $L$
+\end_inset
+
+, לפי פרמטרי השכבה:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+נגזרת לפי 
+\begin_inset Formula $b$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\frac{\partial L}{\partial b}=\left(\begin{array}{ccccc}
+\frac{\partial L_{1}}{\partial b_{1}} & \cdots & \frac{\partial L_{1}}{\partial b_{i}} & \cdots & \frac{\partial L_{1}}{\partial b_{M}}\\
+\vdots & \ddots & \vdots & \ddots & \vdots\\
+\frac{\partial L_{k}}{\partial b_{1}} & \cdots & \frac{\partial L_{k}}{\partial b_{i}} & \cdots & \frac{\partial L_{k}}{\partial b_{M}}\\
+\vdots & \ddots & \vdots & \ddots & \vdots\\
+\frac{\partial L_{P}}{\partial b_{1}} & \cdots & \frac{\partial L_{P}}{\partial b_{i}} & \cdots & \frac{\partial L_{P}}{\partial b_{M}}
+\end{array}\right)
+\]
+
+\end_inset
+
+ואיבר כללי הינו:
+\begin_inset Formula 
+\[
+\frac{\partial L_{k}}{\partial b_{i}}=\sum_{l=1}^{N}\frac{\partial L_{k}}{\partial Z_{l}}\frac{\partial Z_{l}}{\partial b_{i}}=a_{i}\sum_{l=1}^{N}\frac{\partial L_{k}}{\partial Z_{l}}\left[\tanh^{2}\left(c_{i}X_{l}-b_{i}\right)-1\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+\bar under
+סקלר
+\bar default
+:
+\series default
+ נפשט את הביטויים עבור מוצא וקטורי של הרשת ונקבל:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+גרדיאנט לפי הכניסות לשכבה:
+\begin_inset Formula 
+\[
+\frac{\partial L}{\partial X}=\left(\begin{array}{ccccc}
+\frac{\partial L}{\partial X_{1}} & \cdots & \frac{\partial L}{\partial X_{i}} & \cdots & \frac{\partial L}{\partial X_{N}}\end{array}\right)
+\]
+
+\end_inset
+
+כאשר איבר כללי הינו:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{\partial L}{\partial X_{i}}=\sum_{l=1}^{N}\frac{\partial L}{\partial Z_{l}}\frac{\partial Z_{l}}{\partial X_{i}}=\frac{\partial L}{\partial Z_{i}}\frac{\partial Z_{i}}{\partial X_{i}}=\frac{\partial L}{\partial Z_{i}}\sum_{j=1}^{M}a_{j}c_{j}\left[1-\tanh^{2}\left(c_{j}X_{i}-b_{j}\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+גרדיאנט מוצא השכבה, 
+\begin_inset Formula $L$
+\end_inset
+
+, לפי פרמטרי השכבה:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+נגזרת לפי 
+\begin_inset Formula $b$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\frac{\partial L}{\partial b}=\left(\begin{array}{ccccc}
+\frac{\partial L}{\partial b_{1}} & \cdots & \frac{\partial L}{\partial b_{i}} & \cdots & \frac{\partial L}{\partial b_{M}}\end{array}\right)
+\]
+
+\end_inset
+
+ואיבר כללי הינו:
+\begin_inset Formula 
+\[
+\frac{\partial L}{\partial b_{i}}=\sum_{l=1}^{N}\frac{\partial L}{\partial Z_{l}}\frac{\partial Z_{l}}{\partial b_{i}}=a_{i}\sum_{l=1}^{N}\frac{\partial L}{\partial Z_{l}}\left[\tanh^{2}\left(c_{i}X_{l}-b_{i}\right)-1\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_body
+\end_document
