@@ -11,10 +11,12 @@ function plotTanh(trainedNetwork)
     b = trainedNetwork.Layers(quantLayerInd).b';
     c = trainedNetwork.Layers(quantLayerInd).c';
     
-    xMargin = abs(max(b));
-    x = linspace(min(b)-xMargin, max(b)+xMargin, 1000);
+    % TODO: *____ Figure out the x limits
+    xMargin = 0.5;
+    x = linspace(-xMargin, xMargin, 10000);
     tanh_func = @(x) sum(meshgrid(a, x)' .* tanh(c .* x - meshgrid(b, x)'), 1);
                          
     plot(x, tanh_func(x), 'LineWidth', 2);
     grid on; grid minor; axis tight;
+    zoom xon;
 end

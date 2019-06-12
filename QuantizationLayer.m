@@ -1,5 +1,8 @@
 classdef QuantizationLayer < nnet.layer.Layer
     
+    % TODO   : ***__ Change tanh sum function to a*tanh(c*(x-b))
+    % TODO   : **___ Recheck if the derivation are performed correctly
+    
     properties
         quantizersNum
         codewordsNum
@@ -28,8 +31,9 @@ classdef QuantizationLayer < nnet.layer.Layer
             
             % Initialize layer weights
             layer.a = ones(1, codewords);
-            layer.b = linspace(-1, 1, codewords);
-            layer.c = ones(1, codewords);
+            % FIXME: b and c should not be multiplied
+            layer.b = 10*linspace(-1, 1, codewords);
+            layer.c = 100*ones(1, codewords);
         end
         
         function Z = predict(layer, X)
@@ -42,16 +46,12 @@ classdef QuantizationLayer < nnet.layer.Layer
             % Output:
             %         Z        -    Output of layer forward function
 
-            tanh_func = @(x) sum(meshgrid(layer.a, x) .* ...
-                             tanh(layer.c .* x - meshgrid(layer.b, x)), 2);
-
-            Z = zeros(size(X));
-            for ii = 1:size(X, 2)
-                for jj = 1:size(X, 3)
-                    Z(:, ii, jj) = tanh_func(X(:, ii, jj));
+            Z = single(zeros(size(X)));
+            for jj = 1:size(Z, 2)
+                for ii = 1:size(Z, 1)
+                    Z(ii,jj) = sum(layer.a .* tanh(layer.c*X(ii,jj) - layer.b));
                 end
             end
-            Z = single(sum(Z, 4));
         end
         
         function [dLdX, dLdb] = backward(layer, X, ~, dLdZ, ~)
@@ -71,21 +71,21 @@ classdef QuantizationLayer < nnet.layer.Layer
             %         dLdAlpha          - Derivatives of the loss with
             %                             respect to alpha
 
-            dZdX_func = @(x) sum(meshgrid(layer.a, x) .* meshgrid(layer.c, x) ./ ...
-                                   cosh(layer.c .* x - meshgrid(layer.b, x)).^2, 2);
-
-            dZdb_func = @(x) sum(- meshgrid(layer.a, x) ./ ...
-                       cosh(layer.c .* x - meshgrid(layer.b, x)).^2, 1)';
-
             dLdX = single(zeros(size(X)));
-            dLdb = single(zeros(length(layer.b), size(X,2), size(X,3)));
-            for ii = 1:size(X, 2)
-                for jj = 1:size(X, 3)
-                    dLdX(:, ii, jj) = dZdX_func(X(:, ii, jj)) .* dLdZ(:, ii, jj);
-                    dLdb(:, ii, jj) = sum(dZdb_func(X(:, ii, jj))' .* dLdZ(:, ii, jj), 1);
+            for jj = 1:size(dLdX, 2)
+                for ii = 1:size(dLdX, 1)
+                    dZidXi = sum(layer.a .* layer.c .* (1-(tanh(layer.c * X(ii,jj) - layer.b)).^2));
+                    dLdX(ii,jj) = dLdZ(ii,jj) * dZidXi;
                 end
             end
-            dLdb = sum(sum(dLdb, 2), 3)';
+            
+            dLdb = single(zeros(size(layer.b)));
+            for jj = 1:size(dLdX, 2)
+                for ii = 1:size(dLdb, 2)
+                    dZdbi = dLdZ(:,jj) .* ((tanh(layer.c(ii)*X(:,jj) - layer.b(ii))).^2 - 1);
+                    dLdb(ii) = layer.a(ii) * sum(dZdbi);
+                end
+            end
         end
     end
 end
