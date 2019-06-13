@@ -150,7 +150,7 @@ Z_{1} & \cdots & Z_{l} & \cdots & Z_{N}\end{array}\right)
 כאשר:
 \begin_inset Formula 
 \[
-Z_{i}=\sum_{j=1}^{M}a_{j}\tanh\left(c_{j}X_{i}-b_{j}\right)
+\boxed{Z_{i}=\sum_{j=1}^{M}a_{j}\tanh\left[c_{j}\left(X_{i}-b_{j}\right)\right]}
 \]
 
 \end_inset
@@ -190,7 +190,7 @@ Z_{i}=\sum_{j=1}^{M}a_{j}\tanh\left(c_{j}X_{i}-b_{j}\right)
 עבור נגזרות שאינן מתאפסות: 
 \begin_inset Formula 
 \[
-\frac{\partial Z_{i}}{\partial X_{i}}=\frac{\partial}{\partial X_{i}}\sum_{j=1}^{M}a_{j}\tanh\left(c_{j}X_{i}-b_{j}\right)=\sum_{j=1}^{M}a_{j}\frac{\partial}{\partial X_{i}}\tanh\left(c_{j}X_{i}-b_{j}\right)=\sum_{j=1}^{M}a_{j}c_{j}\left[1-\tanh^{2}\left(c_{j}X_{i}-b_{j}\right)\right]
+\frac{\partial Z_{i}}{\partial X_{i}}=\frac{\partial}{\partial X_{i}}\sum_{j=1}^{M}a_{j}\tanh\left[c_{j}\left(X_{i}-b_{j}\right)\right]=\sum_{j=1}^{M}a_{j}\frac{\partial}{\partial X_{i}}\tanh\left[c_{j}\left(X_{i}-b_{j}\right)\right]=\sum_{j=1}^{M}a_{j}c_{j}\left\{ 1-\tanh^{2}\left[c_{j}\left(X_{i}-b_{j}\right)\right]\right\} 
 \]
 
 \end_inset
@@ -230,7 +230,7 @@ b_{1} & \cdots & b_{i} & \cdots & b_{M}\end{array}\right)$
 
 \begin_inset Formula 
 \[
-\frac{\partial Z_{l}}{\partial b_{i}}=\frac{\partial}{\partial b_{i}}\sum_{j=1}^{M}a_{j}\tanh\left(c_{j}X_{l}-b_{j}\right)=a_{i}\left[\tanh^{2}\left(c_{i}X_{l}-b_{i}\right)-1\right]
+\frac{\partial Z_{l}}{\partial b_{i}}=\frac{\partial}{\partial b_{i}}\sum_{j=1}^{M}a_{j}\tanh\left[c_{j}\left(X_{i}-b_{j}\right)\right]=a_{i}c_{j}\left\{ \tanh^{2}\left[c_{j}\left(X_{i}-b_{j}\right)\right]-1\right\} 
 \]
 
 \end_inset
@@ -301,7 +301,7 @@ b_{1} & \cdots & b_{i} & \cdots & b_{M}\end{array}\right)$
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\frac{\partial L_{k}}{\partial X_{i}}=\sum_{l=1}^{N}\frac{\partial L_{k}}{\partial Z_{l}}\frac{\partial Z_{l}}{\partial X_{i}}=\frac{\partial L_{k}}{\partial Z_{i}}\frac{\partial Z_{i}}{\partial X_{i}}=\frac{\partial L_{k}}{\partial Z_{i}}\sum_{j=1}^{M}a_{j}c_{j}\left[1-\tanh^{2}\left(c_{j}X_{i}-b_{j}\right)\right]
+\frac{\partial L_{k}}{\partial X_{i}}=\sum_{l=1}^{N}\frac{\partial L_{k}}{\partial Z_{l}}\frac{\partial Z_{l}}{\partial X_{i}}=\frac{\partial L_{k}}{\partial Z_{i}}\frac{\partial Z_{i}}{\partial X_{i}}=\frac{\partial L_{k}}{\partial Z_{i}}\sum_{j=1}^{M}a_{j}c_{j}\left\{ 1-\tanh^{2}\left[c_{j}\left(X_{i}-b_{j}\right)\right]\right\} 
 \]
 
 \end_inset
@@ -341,7 +341,7 @@ b_{1} & \cdots & b_{i} & \cdots & b_{M}\end{array}\right)$
 ואיבר כללי הינו:
 \begin_inset Formula 
 \[
-\frac{\partial L_{k}}{\partial b_{i}}=\sum_{l=1}^{N}\frac{\partial L_{k}}{\partial Z_{l}}\frac{\partial Z_{l}}{\partial b_{i}}=a_{i}\sum_{l=1}^{N}\frac{\partial L_{k}}{\partial Z_{l}}\left[\tanh^{2}\left(c_{i}X_{l}-b_{i}\right)-1\right]
+\frac{\partial L_{k}}{\partial b_{i}}=\sum_{l=1}^{N}\frac{\partial L_{k}}{\partial Z_{l}}\frac{\partial Z_{l}}{\partial b_{i}}=a_{i}c_{i}\sum_{l=1}^{N}\frac{\partial L_{k}}{\partial Z_{l}}\left\{ \tanh^{2}\left[c_{j}\left(X_{l}-b_{i}\right)\right]-1\right\} 
 \]
 
 \end_inset
@@ -379,7 +379,7 @@ b_{1} & \cdots & b_{i} & \cdots & b_{M}\end{array}\right)$
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\frac{\partial L}{\partial X_{i}}=\sum_{l=1}^{N}\frac{\partial L}{\partial Z_{l}}\frac{\partial Z_{l}}{\partial X_{i}}=\frac{\partial L}{\partial Z_{i}}\frac{\partial Z_{i}}{\partial X_{i}}=\frac{\partial L}{\partial Z_{i}}\sum_{j=1}^{M}a_{j}c_{j}\left[1-\tanh^{2}\left(c_{j}X_{i}-b_{j}\right)\right]
+\boxed{\frac{\partial L}{\partial X_{i}}}=\sum_{l=1}^{N}\frac{\partial L}{\partial Z_{l}}\frac{\partial Z_{l}}{\partial X_{i}}=\frac{\partial L}{\partial Z_{i}}\frac{\partial Z_{i}}{\partial X_{i}}\boxed{=\frac{\partial L}{\partial Z_{i}}\sum_{j=1}^{M}a_{j}c_{j}\left\{ 1-\tanh^{2}\left[c_{j}\left(X_{i}-b_{j}\right)\right]\right\} }
 \]
 
 \end_inset
@@ -414,7 +414,7 @@ b_{1} & \cdots & b_{i} & \cdots & b_{M}\end{array}\right)$
 ואיבר כללי הינו:
 \begin_inset Formula 
 \[
-\frac{\partial L}{\partial b_{i}}=\sum_{l=1}^{N}\frac{\partial L}{\partial Z_{l}}\frac{\partial Z_{l}}{\partial b_{i}}=a_{i}\sum_{l=1}^{N}\frac{\partial L}{\partial Z_{l}}\left[\tanh^{2}\left(c_{i}X_{l}-b_{i}\right)-1\right]
+\boxed{\frac{\partial L}{\partial b_{i}}}=\sum_{l=1}^{N}\frac{\partial L}{\partial Z_{l}}\frac{\partial Z_{l}}{\partial b_{i}}\boxed{=a_{i}c_{i}\sum_{l=1}^{N}\frac{\partial L}{\partial Z_{l}}\left\{ \tanh^{2}\left[c_{j}\left(X_{l}-b_{i}\right)\right]-1\right\} }
 \]
 
 \end_inset

@@ -1,7 +1,6 @@
 classdef QuantizationLayer < nnet.layer.Layer
     
-    % TODO   : ***__ Change tanh sum function to a*tanh(c*(x-b))
-    % TODO   : **___ Recheck if the derivation are performed correctly
+    %#ok<*PROPLC>
     
     properties
         quantizersNum
@@ -32,8 +31,8 @@ classdef QuantizationLayer < nnet.layer.Layer
             % Initialize layer weights
             layer.a = ones(1, codewords);
             % FIXME: b and c should not be multiplied
-            layer.b = 10*linspace(-1, 1, codewords);
-            layer.c = 100*ones(1, codewords);
+            layer.b = linspace(-1, 1, codewords);
+            layer.c = 30*ones(1, codewords);
         end
         
         function Z = predict(layer, X)
@@ -45,11 +44,15 @@ classdef QuantizationLayer < nnet.layer.Layer
             %         X        -    Input data
             % Output:
             %         Z        -    Output of layer forward function
-
+            
+            a = layer.a; 
+            b = layer.b;
+            c = layer.c;
+            
             Z = single(zeros(size(X)));
             for jj = 1:size(Z, 2)
                 for ii = 1:size(Z, 1)
-                    Z(ii,jj) = sum(layer.a .* tanh(layer.c*X(ii,jj) - layer.b));
+                    Z(ii,jj) = sum(a .* tanh(c .* (X(ii,jj) - b)));
                 end
             end
         end
@@ -71,10 +74,14 @@ classdef QuantizationLayer < nnet.layer.Layer
             %         dLdAlpha          - Derivatives of the loss with
             %                             respect to alpha
 
+            a = layer.a; 
+            b = layer.b;
+            c = layer.c;
+            
             dLdX = single(zeros(size(X)));
             for jj = 1:size(dLdX, 2)
                 for ii = 1:size(dLdX, 1)
-                    dZidXi = sum(layer.a .* layer.c .* (1-(tanh(layer.c * X(ii,jj) - layer.b)).^2));
+                    dZidXi = sum(a .* c .* (1-(tanh(c .* (X(ii,jj) - b))).^2));
                     dLdX(ii,jj) = dLdZ(ii,jj) * dZidXi;
                 end
             end
@@ -82,8 +89,8 @@ classdef QuantizationLayer < nnet.layer.Layer
             dLdb = single(zeros(size(layer.b)));
             for jj = 1:size(dLdX, 2)
                 for ii = 1:size(dLdb, 2)
-                    dZdbi = dLdZ(:,jj) .* ((tanh(layer.c(ii)*X(:,jj) - layer.b(ii))).^2 - 1);
-                    dLdb(ii) = layer.a(ii) * sum(dZdbi);
+                    dZdbi_in = (tanh(c(ii)* (X(:,jj) - b(ii)))).^2 - 1;
+                    dLdb(ii) = a(ii) * c(ii) * sum(dLdZ(:,jj) .* dZdbi_in);
                 end
             end
         end
