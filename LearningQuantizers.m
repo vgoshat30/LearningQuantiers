@@ -1,11 +1,9 @@
+% This script was used before GetQuantNet and is kept for any case...
 %% Prepare Workspace
 clear LearningQuantizers QuantizationLayer; close all; clc;
-%% Parameters
-DATA_FILENAME = 'data_PIC.mat';
 
-VALIDATION_PERCENT = 0.1;
-%% Prepare Data
-load(DATA_FILENAME);
+% Prepare Data
+load('data_PIC.mat');
 %% Define Network
 layers = [ ...
     sequenceInputLayer(12)
@@ -30,7 +28,7 @@ layers = [ ...
 
 
 options = trainingOptions('sgdm', ...
-    'MaxEpochs',1000, ...
+    'MaxEpochs',10, ...
     'Shuffle','every-epoch', ...
     'InitialLearnRate', 1e-2, ...
 ...%     'LearnRateSchedule', 'piecewise', ...
@@ -43,8 +41,6 @@ trainIn = num2cell(trainX', 1)';
 trainOut = num2cell(trainS', 1)';
 [trainedNet, traininfo] = trainNetwork(trainIn, trainS, layers, options);
 %% Test Network
-% TODO: ***** Figure out a way to test the network with hard quantization
-% TODO: ****_ Save few tests and see if incrementing codewords num lowers loss
 
 % Find quantization layer index
 for ii = 1:length(trainedNet.Layers)
@@ -61,8 +57,7 @@ hardQuantNet = assembleNetwork(trainedLayers);
 
 SPredicted = predict(hardQuantNet, num2cell(dataX', 1));
 mse = mean(mean((SPredicted - dataS).^2, 2), 1);
-plotTanh(trainedNet);
-%% Save test
+VisualizeNet(hardQuantNet);
 
 
 

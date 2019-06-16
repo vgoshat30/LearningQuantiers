@@ -29,10 +29,10 @@ classdef QuantizationLayer < nnet.layer.Layer
                 " codewords each";
             
             % Initialize layer weights
-            layer.a = 1/codewords * ones(1, codewords);
+            layer.a = 1/codewords * ones(1, codewords-1);
             % FIXME: b and c should not be multiplied
-            layer.b = linspace(-1, 1, codewords);
-            layer.c = 8/mean(diff(layer.b)) * ones(1, codewords);
+            layer.b = linspace(-1, 1, codewords-1);
+            layer.c = 8/mean(diff(layer.b)) * ones(1, codewords-1);
         end
         
         function Z = predict(layer, X)
