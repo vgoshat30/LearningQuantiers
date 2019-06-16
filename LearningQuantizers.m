@@ -10,11 +10,19 @@ load(DATA_FILENAME);
 layers = [ ...
     sequenceInputLayer(12)
     lstmLayer(12, 'OutputMode', 'last')
+    fullyConnectedLayer(15)
+    reluLayer
     fullyConnectedLayer(20)
+    reluLayer
+    fullyConnectedLayer(25)
+    reluLayer
+    fullyConnectedLayer(15)
     reluLayer
     fullyConnectedLayer(10)
     reluLayer
-    QuantizationLayer(10, 5)
+    QuantizationLayer(10, 6)
+    reluLayer
+    fullyConnectedLayer(15)
     reluLayer
     fullyConnectedLayer(6)
     regressionLayer
@@ -22,9 +30,9 @@ layers = [ ...
 
 
 options = trainingOptions('sgdm', ...
-    'MaxEpochs',100, ...
+    'MaxEpochs',1000, ...
     'Shuffle','every-epoch', ...
-    'InitialLearnRate', 1e-3, ...
+    'InitialLearnRate', 1e-2, ...
 ...%     'LearnRateSchedule', 'piecewise', ...
 ...%     'LearnRateDropPeriod', 100, ...
 ...%     'LearnRateDropFactor', 0.95, ...
@@ -37,9 +45,25 @@ trainOut = num2cell(trainS', 1)';
 %% Test Network
 % TODO: ***** Figure out a way to test the network with hard quantization
 % TODO: ****_ Save few tests and see if incrementing codewords num lowers loss
-SPredicted = predict(trainedNet, num2cell(dataX', 1));
+
+% Find quantization layer index
+for ii = 1:length(trainedNet.Layers)
+    if isa(trainedNet.Layers(ii), 'QuantizationLayer')
+        quantLayerInd = ii;
+        break;
+    end
+end
+
+trainedLayers = trainedNet.Layers;
+trainedLayers(quantLayerInd) = HardQuantizationLayer(trainedLayers(quantLayerInd));
+
+hardQuantNet = assembleNetwork(trainedLayers);
+
+SPredicted = predict(hardQuantNet, num2cell(dataX', 1));
 mse = mean(mean((SPredicted - dataS).^2, 2), 1);
 plotTanh(trainedNet);
+%% Save test
+
 
 
 
