@@ -1,6 +1,6 @@
-function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, codewordsNum)
-    % GETQUANTNET trains a quantization network over given data with soft
-    % quantization function and terurns a trained network with hard
+function Net = GetQuantNoiseNet(trainingSamples, traningLabels, quantizersNum, codewordsNum)
+    % GetQuantNoiseNet trains a quantization network over given data with
+    % noisy quantization function and terurns a trained network with hard
     % quantization function
     % 
     %
@@ -34,10 +34,12 @@ function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, codewo
             
     s_nReps = 3;        % Number of repetitions
     s_fLoss = inf;
-   
+    s_fDynRange = 2;
+    s_fDelta = 2*s_fDynRange / codewordsNum;
+     
     %% Create Layers
     inputDim = size(trainingSamples, 2);
-
+ 
     
     trainSamplesCell = num2cell(trainingSamples', 1)';
     % Added for classification networks
@@ -48,8 +50,7 @@ function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, codewo
         sequenceInputLayer(inputDim)
         lstmLayer(inputDim, 'OutputMode', 'last')
         fullyConnectedLayer(quantizersNum)
-%        reluLayer
-        QuantizationLayer(quantizersNum, codewordsNum) 
+        QuantNoiseLayer(s_fDelta)
         fullyConnectedLayer(outputDim)
         reluLayer
         fullyConnectedLayer(outputDim)
@@ -65,23 +66,17 @@ function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, codewo
         end
     
     end
-    %% Convert to hard quantization
+    %% Convert to unifrom quantization
     % Find quantization layer index
     for ii = 1:length(softNet.Layers)
-        if isa(softNet.Layers(ii), 'QuantizationLayer')
+        if isa(softNet.Layers(ii), 'QuantNoiseLayer')
             quantLayerInd = ii;
             break;
         end
     end
-          
-    
-    trainedLayers = softNet.Layers; 
-     % sort by shifts - not done in training
-    [b, I] = sort(trainedLayers(quantLayerInd).b);
-    trainedLayers(quantLayerInd).a = trainedLayers(quantLayerInd).a(I);
-    trainedLayers(quantLayerInd).b = b;
-    trainedLayers(quantLayerInd).c = trainedLayers(quantLayerInd).c(I);
-    trainedLayers(quantLayerInd) = HardQuantizationLayer(trainedLayers(quantLayerInd));
+              
+    trainedLayers = softNet.Layers;  
+    trainedLayers(quantLayerInd) = UniformQuantizationLayer(codewordsNum, s_fDynRange);
 
     Net = assembleNetwork(trainedLayers);
 end

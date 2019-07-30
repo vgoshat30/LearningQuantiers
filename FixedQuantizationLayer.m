@@ -1,4 +1,4 @@
-classdef QuantizationLayer < nnet.layer.Layer
+classdef FixedQuantizationLayer < nnet.layer.Layer
     
     %#ok<*PROPLC>
     
@@ -6,16 +6,17 @@ classdef QuantizationLayer < nnet.layer.Layer
         quantizersNum
         codewordsNum
         a
+        b
         c
     end
     
     properties (Learnable)
         % Layer learnable parameters
-        b
+ %       b
     end
     
     methods
-        function layer = QuantizationLayer(quantizers, codewords)
+        function layer = FixedQuantizationLayer(quantizers, codewords)
             % Set number of inputs.
             layer.quantizersNum = quantizers;
             layer.codewordsNum = codewords;
@@ -57,7 +58,7 @@ classdef QuantizationLayer < nnet.layer.Layer
             end
         end
         
-        function [dLdX, dLdb] = backward(layer, X, ~, dLdZ, ~)
+        function [dLdX] = backward(layer, X, ~, dLdZ, ~)
             % Backward propagate the derivative of the loss function through 
             % the layer
             %
@@ -85,14 +86,14 @@ classdef QuantizationLayer < nnet.layer.Layer
                     dLdX(ii,jj) = dLdZ(ii,jj) * dZidXi;
                 end
             end
-            
-            dLdb = single(zeros(size(layer.b)));
-            for jj = 1:size(dLdX, 2)
-                for ii = 1:size(dLdb, 2)
-                    dZdbi_in = (tanh(c(ii)* (X(:,jj) - b(ii)))).^2 - 1;
-                    dLdb(ii) = a(ii) * c(ii) * sum(dLdZ(:,jj) .* dZdbi_in);
-                end
-            end
+%             
+%             dLdb = single(zeros(size(layer.b)));
+%             for jj = 1:size(dLdX, 2)
+%                 for ii = 1:size(dLdb, 2)
+%                     dZdbi_in = (tanh(c(ii)* (X(:,jj) - b(ii)))).^2 - 1;
+%                     dLdb(ii) = a(ii) * c(ii) * sum(dLdZ(:,jj) .* dZdbi_in);
+%                 end
+%             end
         end
     end
 end

@@ -10,6 +10,7 @@ function q = tanh2quantization(a, b, c, x)
     % Output:
     %         q     - 	Quantized scalar output
     
+    % sort b
     tanh_f = @(x) sum(a .* tanh(c .* (x - b)));
     
     if x <= b(1)

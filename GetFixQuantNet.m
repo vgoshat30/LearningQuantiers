@@ -1,4 +1,4 @@
-function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, codewordsNum)
+function Net = GetFixQuantNet(trainingSamples, traningLabels, quantizersNum, codewordsNum)
     % GETQUANTNET trains a quantization network over given data with soft
     % quantization function and terurns a trained network with hard
     % quantization function
@@ -32,7 +32,7 @@ function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, codewo
                 ); %,'Plots', 'training-progress');
             
             
-    s_nReps = 3;        % Number of repetitions
+    s_nReps = 1;        % Number of repetitions
     s_fLoss = inf;
    
     %% Create Layers
@@ -49,7 +49,7 @@ function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, codewo
         lstmLayer(inputDim, 'OutputMode', 'last')
         fullyConnectedLayer(quantizersNum)
 %        reluLayer
-        QuantizationLayer(quantizersNum, codewordsNum) 
+        FixedQuantizationLayer(quantizersNum, codewordsNum) 
         fullyConnectedLayer(outputDim)
         reluLayer
         fullyConnectedLayer(outputDim)
@@ -68,7 +68,7 @@ function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, codewo
     %% Convert to hard quantization
     % Find quantization layer index
     for ii = 1:length(softNet.Layers)
-        if isa(softNet.Layers(ii), 'QuantizationLayer')
+        if isa(softNet.Layers(ii), 'FixedQuantizationLayer')
             quantLayerInd = ii;
             break;
         end
