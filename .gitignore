@@ -2,3 +2,8 @@
 .DS_Store
 *.lyx~
 *.m~
+ChannelEstimationData/DLHFIN_Ch1.mat
+ChannelEstimationData/DLHFIN_Ch2.mat
+ChannelEstimationData/DLHFIN_Ch3.mat
+ChannelEstimationData/DLHFIN_Ch4.mat
+ChannelEstimationData/DLHFIN_Ch5.mat
