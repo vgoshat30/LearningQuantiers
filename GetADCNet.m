@@ -1,8 +1,8 @@
-function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, ...
-                           codewordsNum, varargin)
-    % GETQUANTNET trains a quantization network over given data with soft
-    % quantization function and terurns a trained network with hard
-    % quantization function
+function Net = GetADCNet(trainingSamples, traningLabels, quantizersNum, ...
+                           codewordsNum, observedT, samplesNum, varargin)
+    % GETADCNET trains a network with sampling and quantization layers over
+    % given data with soft sampling and quantization function and terurns a
+    % trained network with real sampling and hard quantization function.
     % 
     %
     % Inputs:
@@ -14,9 +14,15 @@ function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, ...
     %                           amount and K is the output dimension
     %
     %       quantizersNum   -   Number of identical quantizers at the
-    %                           quantization layer
+    %                           quantization layer (this is also the
+    %                           samplers number)
     %
     %       codewordsNum    -   Number of codewords in each quantizer
+    %
+    %       observedT       -   Number of dense time observations (the
+    %                           equivalent of continuous time.
+    %
+    %       samplesNum      -   Number of amples out of observedT observations
     %
     %
     % Output:
@@ -68,13 +74,11 @@ function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, ...
                 'MiniBatchSize',64, ...
                 'Verbose',false ...
                 ,'Plots', plotType);
-            
-            
+    
     s_nReps = prsr.Results.Repetitions;
     s_fLoss = inf;
     %% Create Layers
     inputDim = size(trainingSamples, 2);
-    outputDim = size(traningLabels, 2);
     
     max_quant_in = max(trainingSamples, [], 'all');
     max_quant_out = max(traningLabels, [], 'all');
@@ -94,20 +98,18 @@ function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, ...
     layers = [ ...
         sequenceInputLayer(inputDim)
         lstmLayer(inputDim, 'OutputMode', 'last')
-        fullyConnectedLayer(2*quantizersNum)
-        reluLayer
-        fullyConnectedLayer(quantizersNum)
-        reluLayer
-        QuantizationLayer(quantizersNum, codewordsNum, max_quant_in, max_quant_out)
-        reluLayer
-        fullyConnectedLayer(2*outputDim)
-        reluLayer
+        fullyConnectedLayer(quantizersNum*observedT)
+        SamplingLayer(quantizersNum, observedT, samplesNum)
+        QuantizationLayer(quantizersNum*samplesNum, codewordsNum, ...
+                          max_quant_in, max_quant_out)
         fullyConnectedLayer(outputDim)
         closingLayers
         ];
     %% Train network
     fprintf(['\nTraining network, ' num2str(s_nReps) ' iterations.\n']);
     fprintf('\tArchitecture:\n')
+    fprintf(['\t\tSampling Layer\t\t-->\tObservations: ' num2str(observedT) ...
+             '\tSamples: ' num2str(samplesNum) '\n']);
     fprintf(['\t\tQuantization Layer\t-->\tQuantizers: ' ...
              num2str(quantizersNum) '\t\tCodewords: ' ...
              num2str(codewordsNum) '\n']);
@@ -123,27 +125,36 @@ function Net = GetQuantNet(trainingSamples, traningLabels, quantizersNum, ...
             s_fLoss = mean(Info.TrainingLoss(end-floor(end/10):end));
             softNet = tempNet;
         elseif any(isnan(Info.TrainingLoss))
-            warning('NaN Loss!');
+            warning('\t\tNaN Loss!');
         end
     end
-    %% Convert to hard quantization
-    % Find quantization layer index
+    %% Convert to hard sampling and quantization
+    % Find sampling and quantization layer index
     for ii = 1:length(softNet.Layers)
         if isa(softNet.Layers(ii), 'QuantizationLayer')
             quantLayerInd = ii;
-            break;
+        elseif isa(softNet.Layers(ii), 'SamplingLayer')
+            samplLayerInd = ii;
         end
     end
     
     trainedLayers = softNet.Layers;
     
-    % Sort quantization layers shifts and aply hard functions
-    [b, I] = sort(trainedLayers(quantLayerInd).b);
-    trainedLayers(quantLayerInd).a = trainedLayers(quantLayerInd).a(I);
+    % Sort sampling and quantization layers shifts and aply hard functions
+    
+    % Qunatization
+    [b, quantI] = sort(trainedLayers(quantLayerInd).b);
+    trainedLayers(quantLayerInd).a = trainedLayers(quantLayerInd).a(quantI);
     trainedLayers(quantLayerInd).b = b;
-    trainedLayers(quantLayerInd).c = trainedLayers(quantLayerInd).c(I);
+    trainedLayers(quantLayerInd).c = trainedLayers(quantLayerInd).c(quantI);
     trainedLayers(quantLayerInd) = HardQuantizationLayer(trainedLayers(quantLayerInd));
     
+    % Sampling
+    [phi, samplI] = sort(trainedLayers(samplLayerInd).phi);
+    trainedLayers(samplLayerInd).phi = phi;
+    trainedLayers(samplLayerInd).sigma = trainedLayers(samplLayerInd).sigma(samplI);
+    trainedLayers(samplLayerInd) = HardSamplingLayer(trainedLayers(samplLayerInd));
+
     % Return network
     Net = assembleNetwork(trainedLayers);
 end
