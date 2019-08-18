@@ -11,8 +11,8 @@ global s_bQuantize;
 s_nN  = 12;             % Number of Rx antennas
 s_nT = 10;              % Observed time frame
 s_nK  = 4;             % Number of transmitted symbols
-s_fTrainSize = 5000;    % Training size
-s_fTestSize = 5000;    % Test data size
+s_fTrainSize = 1e5;    % Training size
+s_fTestSize = 1e5;    % Test data size
 s_nP = s_nK;            % Number of scalar quantizers
 s_nTtilde = 2;          % Number of samples to produce over time frame
 s_nChannels = 1;         % 1 - Gaussian channel; 
@@ -23,8 +23,8 @@ s_fFrameSize = 500;
 s_fNumFrames = s_fTrainSize/s_fFrameSize;
 s_fNumTestFrames = s_fTestSize/s_fFrameSize;
 
-v_fSNRdB =  6:14; % [8 12];    %  % SNR values in dB.
-v_fRate =  1; %[1,2]; %1:0.2:3;%[1,2];   % Quantization rate
+v_fSNRdB =  6:2:12; % [8 12];    %  % SNR values in dB.
+v_fRate =  [1 2]; %[1,2]; %1:0.2:3;%[1,2];   % Quantization rate
 
 s_nXaxis = 1;       % 1 - SNR
                     % 2 - Quantization rate
@@ -107,7 +107,14 @@ for kk=1:s_fNumFrames
 end
 %%
 
+waitBr = waitbar(0, 'Training...', ...
+                 'CreateCancelBtn', @waitbarCancelCallback);
+setappdata(waitBr,'canceling',0);
+loopLength = length(v_fSNRdB) * length(v_fRate);
+iterationNum = 0;
+
 for ii=1:length(v_fSNRdB)
+    
     s_bQuantize = 0;
     s_fSigW = 10^(-0.1* v_fSNRdB(ii));
     s_fMAPBER1 = 0;
@@ -159,15 +166,26 @@ for ii=1:length(v_fSNRdB)
         m_fBER(2,s_fXidx,s_fYidx) = s_fMAPBER2;
         
         % Deep task-based quantizer
-        if (v_nCurves(3) == 1)                  
+        if (v_nCurves(3) == 1)
             % Get network
             % TO GOSHA - you will need to add as an input to this function
             % also the parameter snTtilde which determines how many samples
             % to take per time interval, and perhaps also the time interval
             % duration s_nT
+            fprintf(['\nSNR:\t\t' num2str(v_fSNRdB(ii)) '[dB]\n' ...
+                     'Quant Rate:\t' num2str(v_fRate(jj)) '\n']);
+            iterationNum = iterationNum + 1;
+            waitbar(iterationNum/loopLength, waitBr, ['Training network ' ...
+                    num2str(iterationNum) '/' num2str(loopLength) ' (' ...
+                    num2str(round(iterationNum/loopLength*100)) '%)']);
+            if getappdata(waitBr, 'canceling')
+                delete(waitBr);
+                break;
+            end
+            
             v_cNet = GetADCNet(m_fYtrain', v_fDtrain', s_nP, codewordsNum, ...
                                  s_nT, s_nTtilde, 'NetType', 'Class', ...
-                                 'Repetitions', 1, 'Epochs', 1, 'Plot', 0);     
+                                 'Repetitions', 1, 'Epochs', 5, 'Plot', 0);     
             
             % Apply network
             v_fDhat = classify(v_cNet,num2cell(m_fYtest, 1)')';
@@ -181,7 +199,7 @@ for ii=1:length(v_fSNRdB)
 
 
         % Deep task-based quantizer, uncertainty
-        if (v_nCurves(4) == 1)        
+        if (v_nCurves(4) == 1)
             % Get network
             v_cNet = GetQuantNet(m_fYtrainErr', v_fDtrain', s_nP, codewordsNum);
             
@@ -246,13 +264,16 @@ for ii=1:length(v_fSNRdB)
             % Convert classification into symbols           
             m_fBhat = de2bi(double(string(v_fDhat)))';
             m_fShat = -1*ones(size(m_fStest)) + 2*m_fBhat;
-            % Compute error
+            % Compute errorclc
+            
             m_fBER(8,s_fXidx,s_fYidx)  =  mean(mean(m_fShat ~= m_fStest));
 
-        end        
+        end
  
     end
 end
+
+delete(waitBr);
 %% Display results
  v_stPlotType = strvcat( '-rs', '--ro', '-b^',  '--bv', '-k<', '--k>',...
      '-m*', '-mx',  '-c^', '--cv');
@@ -287,7 +308,10 @@ for kk=1:length(v_fY)
     hold off;
 end
 %% Finish Alarm
-load handel;
-sound(y,Fs);
+% load handel;
+% sound(y,Fs);
 
+function waitbarCancelCallback(~, ~)
+    setappdata(gcbf,'canceling',1);
+end
 
