@@ -2,8 +2,10 @@
 %% Prepare Workspace
 clear ChannelEstimTest1 variables; close all; clc;
 
+fileNameDate = datestr(datetime);
+
 % Load Data
-load('ChannelEstimationData/DLHFIN_Ch2.mat');
+load('ChannelEstimationData/DLHFIN_Ch1.mat');
 % load('data_PIC.mat');
 
 % Normalize data
@@ -14,8 +16,8 @@ setSize = size(HFDL, 1);
 %
 % Assumed here that the third dimension of HFDL is the base station antennas and
 % the fourth one is the users -> should re-check
-nt = 32; % max is 256
-nu = 4; % max is 32
+nt = 64; % max is 256
+nu = 8; % max is 32
 
 meas2paramRatio = 4;
 
@@ -42,7 +44,7 @@ data = [real(Y); imag(Y)].';
 %
 %% Create, Train and Test Network
 
-trainingPortion = 0.5;
+trainingPortion = 0.9;
 
 % Divide data
 trainSamplesNum = floor(setSize * trainingPortion);
@@ -52,8 +54,8 @@ trainLabels = labels(1:trainSamplesNum, :);
 % Test
 testData = data(1:(setSize-trainSamplesNum), :);
 testLabels = labels(1:(setSize-trainSamplesNum), :);
-%}
 
+% load('data_PIC.mat');
 % trainData = trainX;
 % trainLabels = trainS;
 % testData = dataX;
@@ -63,21 +65,20 @@ mse = [];
 quantNet = [];
 rate = [];
 testNum = 5;
-quantizersList = 5:6;
-codewordsList = 3:4;
+quantizersList = 10;
+codewordsList = 12:30;
 
 fig = figure;
+set(fig, 'CloseRequestFcn', @my_closereq);
 dcm_obj = datacursormode(fig);
 datacursormode on
 set(dcm_obj,'UpdateFcn',@textUpdateFun);
 
 ax = axes; grid on; grid minor; hold on;
-clr = get(ax, 'ColorOrder');
-clr = clr(1, :);
+firstColor = get(ax, 'ColorOrder');
+firstColor = firstColor(1, :);
 xlabel('Rate', 'Interpreter', 'LaTex', 'FontSize', 20);
 ylabel('Loss', 'Interpreter', 'LaTex', 'FontSize', 20);
-
-
 
 for quantizersInd = 1:length(quantizersList)
     for codewordsInd = 1:length(codewordsList)
@@ -86,20 +87,31 @@ for quantizersInd = 1:length(quantizersList)
         rate(end+1) = quantizers * codewords / size(labels, 2); %#ok<SAGROW>
         %% Train
         quantNet = [quantNet GetQuantNet(trainData, trainLabels, quantizers, ...
-                    codewords, 'NetType', 'Reg')]; %#ok<AGROW>
+                    codewords, 'NetType', 'Reg', 'Repetitions', 1, ...
+                    'Epochs', 50, 'Plot', 1)]; %#ok<AGROW>
         %% Test
         fprintf('Testing Network.\t');
         SPredicted = predict(quantNet(end), num2cell(testData', 1));
         mse(end+1) = mean(mean((SPredicted - testLabels).^2, 2), 1); %#ok<SAGROW>
         fprintf(['MSE:\t' num2str(mse(end)) '\n']);
-        plot(rate(end), mse(end), 'x', 'Color', clr, 'LineWidth', 2, ...
+        plot(rate(end), mse(end), 'x', 'Color', firstColor, 'LineWidth', 2, ...
              'MarkerSize', 10, ...
              'DisplayName', num2str(quantizers) + " " + num2str(codewords));
         drawnow;
+        save("Results/results " + fileNameDate + ".mat", '-regexp', '^(?!(quantNet|ax|fig|firstColor|HFDL|dcm_obj|codewords|quantizers|quantizersInd|codewordsInd)$).');
+        savefig("Results/results " + fileNameDate + ".fig");
     end
 end
 %% Save Results
-clear HFDL ax dcm_obj fig clr codewords quantizers quantizersInd ...
-      codewordsInd setSize;
-save("Results/results " + datestr(datetime) + ".mat");
-savefig("Results/results " + datestr(datetime) + ".fig");
+set(fig, 'CloseRequestFcn', 'closereq');
+save("Results/results " + fileNameDate + ".mat", '-regexp', '^(?!(quantNet|ax|fig|firstColor|HFDL|dcm_obj|codewords|quantizers|quantizersInd|codewordsInd)$).');
+savefig("Results/results " + fileNameDate + ".fig");
+
+
+function my_closereq(~, ~)
+    % Close request function 
+    % to display a question dialog box 
+    warndlg('Unable to close window during network training', ...
+            'Can''t Close Figure');
+end
+

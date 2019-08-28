@@ -107,9 +107,9 @@ for kk=1:s_fNumFrames
 end
 %%
 
-waitBr = waitbar(0, 'Training...', ...
-                 'CreateCancelBtn', @waitbarCancelCallback);
-setappdata(waitBr,'canceling',0);
+% waitBr = waitbar(0, 'Training...', ...
+%                  'CreateCancelBtn', @waitbarCancelCallback);
+% setappdata(waitBr,'canceling',0);
 loopLength = length(v_fSNRdB) * length(v_fRate);
 iterationNum = 0;
 
@@ -175,17 +175,17 @@ for ii=1:length(v_fSNRdB)
             fprintf(['\nSNR:\t\t' num2str(v_fSNRdB(ii)) '[dB]\n' ...
                      'Quant Rate:\t' num2str(v_fRate(jj)) '\n']);
             iterationNum = iterationNum + 1;
-            waitbar(iterationNum/loopLength, waitBr, ['Training network ' ...
-                    num2str(iterationNum) '/' num2str(loopLength) ' (' ...
-                    num2str(round(iterationNum/loopLength*100)) '%)']);
-            if getappdata(waitBr, 'canceling')
-                delete(waitBr);
-                break;
-            end
+%             waitbar(iterationNum/loopLength, waitBr, ['Training network ' ...
+%                     num2str(iterationNum) '/' num2str(loopLength) ' (' ...
+%                     num2str(round(iterationNum/loopLength*100)) '%)']);
+%             if getappdata(waitBr, 'canceling')
+%                 delete(waitBr);
+%                 break;
+%             end
             
-            v_cNet = GetADCNet(m_fYtrain', v_fDtrain', s_nP, codewordsNum, ...
+            v_cNet = GetADCPhaseNet(m_fYtrain', v_fDtrain', s_nP, codewordsNum, ...
                                  s_nT, s_nTtilde, 'NetType', 'Class', ...
-                                 'Repetitions', 1, 'Epochs', 5, 'Plot', 0);     
+                                 'Repetitions', 1, 'Epochs', 5, 'Plot', 1);     
             
             % Apply network
             v_fDhat = classify(v_cNet,num2cell(m_fYtest, 1)')';
@@ -273,7 +273,7 @@ for ii=1:length(v_fSNRdB)
     end
 end
 
-delete(waitBr);
+% delete(waitBr);
 %% Display results
  v_stPlotType = strvcat( '-rs', '--ro', '-b^',  '--bv', '-k<', '--k>',...
      '-m*', '-mx',  '-c^', '--cv');

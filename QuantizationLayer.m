@@ -32,7 +32,7 @@ classdef QuantizationLayer < nnet.layer.Layer
             layer.a = max_out/codewords * ones(1, codewords-1);
             % FIXME: b and c should not be multiplied
             layer.b = max_in*linspace(-1, 1, codewords-1);
-            layer.c = 15/mean(diff(layer.b)) * ones(1, codewords-1);
+            layer.c = 12/mean(diff(layer.b)) * ones(1, codewords-1);
         end
         
         function Z = predict(layer, X)
