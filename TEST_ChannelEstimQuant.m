@@ -14,10 +14,10 @@ HFDL = HFDL / maxHFDL;
 setSize = size(HFDL, 1);
 %% Generate Channel Outputs Data
 %
-% Assumed here that the third dimension of HFDL is the base station antennas and
-% the fourth one is the users -> should re-check
-nt = 64; % max is 256
-nu = 8; % max is 32
+% Assumed here that the third dimension of HFDL is the users and the fourth one
+% is the the base station antennas -> should re-check
+nu = 32; % max is 256
+nt = 4; % max is 32
 
 meas2paramRatio = 4;
 
@@ -29,7 +29,7 @@ Phi = dftmtx(tau);
 Phi = Phi(:,1:nu);
 
 % Channel Vectorization
-H = HFDL(:, 1, 1:nt, 1:nu) + 1j * HFDL(:, 1, 1:nt, 1:nu);
+H = HFDL(:, 1, 1:nu, 1:nt) + 1j * HFDL(:, 1, 1:nu, 1:nt);
 H = permute(H, [1 3 4 2]);
 H = H(:, :).';
 
